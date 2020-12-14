@@ -1,9 +1,7 @@
 # APY Vision LP Balances Subgraph
 
 #### Introduction 
-This subgraph will index all the Liquidity Pool balances of a user whether they are still in the pool or not. This is useful information as we want to build a history of P+L for their liquidity pool holdings. 
-
-Supports Balancer, Sushiswap and Uniswap -- more to be added later.
+Interest Bearing ETH price history subgraph (it's not available on Uniswap).
 
 This is one of the subgraphs used for [APY Vision](https://apy.vision)
 
