@@ -1,0 +1,6 @@
+type Price @entity {
+  id: ID!
+  priceETH: BigDecimal!
+  priceUSD: BigDecimal!
+}
+
