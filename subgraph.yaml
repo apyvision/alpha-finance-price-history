@@ -24,4 +24,4 @@ dataSources:
         - name: Chainlink
           file: ./abis/chainLinkEthUsdPrice.json
       blockHandlers:
-        - handler: handleBlockWithCallToContract
+        - handler: handleBlock

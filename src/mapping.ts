@@ -10,6 +10,9 @@ let BI_10 = BigInt.fromI32(10)
 let ZERO_BI = BigInt.fromI32(0)
 let ONE_BI = BigInt.fromI32(1)
 
+let ALPHA_CONTRACT_ADDRS = "0x67b66c99d3eb37fa76aa3ed1ff33e8e39f0b9c7a";
+let CHAIN_LINK_ETH_USD_CONTRACT = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419";
+
 function exponentToBigDecimal(decimals: BigInt): BigDecimal {
   let bd = BigDecimal.fromString('1')
   for (let i = ZERO_BI; i.lt(decimals as BigInt); i = i.plus(ONE_BI)) {
@@ -25,17 +28,16 @@ function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: BigInt): B
   return tokenAmount.toBigDecimal().div(exponentToBigDecimal(exchangeDecimals))
 }
 
-export function handleBlockWithCallToContract(block: ethereum.Block): void {
+export function handleBlock(block: ethereum.Block): void {
   let id = block.number.toString();
-  let debtShare = BI_10.pow(18);
-  log.debug('Debtshare {}', [debtShare.toString()])
-  let rate = Bank.bind(Address.fromString("0x67b66c99d3eb37fa76aa3ed1ff33e8e39f0b9c7a")).debtShareToVal(debtShare);
-  let answer = Chainlink.bind(Address.fromString("0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419")).latestAnswer();
+  let totalEth = Bank.bind(Address.fromString(ALPHA_CONTRACT_ADDRS)).totalETH();
+  let totalSupply = Bank.bind(Address.fromString(ALPHA_CONTRACT_ADDRS)).totalSupply();
+  let ethUsdPrice = Chainlink.bind(Address.fromString(CHAIN_LINK_ETH_USD_CONTRACT)).latestAnswer();
 
-  log.debug('Rate is {}, answer is {}', [rate.toString(), answer.toString()])
+  log.debug('total ETH is {}, eth usd price is {}, supply is {}', [totalEth.toString(), ethUsdPrice.toString(), totalSupply.toString()])
 
-  let ethPriceUsd = convertTokenToDecimal(answer, BI_8)
-  let priceEth = convertTokenToDecimal(rate, BI_18);
+  let ethPriceUsd = convertTokenToDecimal(ethUsdPrice, BI_8)
+  let priceEth = convertTokenToDecimal(totalEth, BI_18).div(convertTokenToDecimal(totalSupply, BI_18));
   let entity = new Price(id)
   entity.priceETH = priceEth;
   entity.priceUSD = ethPriceUsd.times(priceEth);
